@@ -122,4 +122,45 @@ class UserControllerTest {
                .andExpect(status().isOk())
                .andExpect(content().string("User with id: 1 deleted successfully"));
     }
+
+    @Test
+    void testLoginSuccess() throws Exception {
+        // Arrange: Create a mock user and configure the repository to return it
+        User user = new User();
+        user.setEmail("john@example.com");
+        user.setPassword("password123");
+        user.setName("John Doe");
+
+        when(userRepository.findByEmail("john@example.com")).thenReturn(user);
+
+        // Act & Assert: Perform POST request and verify the response
+        mockMvc.perform(post("/api/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.name").value("John Doe"));
+    }
+
+    @Test
+    void testLoginInvalidCredentials() throws Exception {
+        // Arrange: Configure the repository to return null for invalid email
+        when(userRepository.findByEmail("invalid@example.com")).thenReturn(null);
+
+        // Act & Assert: Perform POST request and verify the response
+        mockMvc.perform(post("/api/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new User("invalid@example.com", "wrongpassword"))))
+               .andExpect(status().isUnauthorized())
+               .andExpect(content().string("Invalid email or password"));
+    }
+
+    @Test
+    void testLoginMissingFields() throws Exception {
+        // Act & Assert: Perform POST request with missing fields and verify the response
+        mockMvc.perform(post("/api/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+               .andExpect(status().isBadRequest())
+               .andExpect(content().string("Email and password must not be null"));
+    }
 }

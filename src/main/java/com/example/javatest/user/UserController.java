@@ -40,13 +40,13 @@ public class UserController {
                 mediaType = "application/json",
                 examples = @ExampleObject(
                     name = "User Example",
-                    value = "{ \"name\": \"John Doe\", \"email\": \"john.doe@example.com\" }"
+                    value = "{ \"name\": \"John Doe\", \"email\": \"john.doe@example.com\", \"password\": \"password123\" }"
                 )
             )
         )
         @RequestBody User user) {
-        if (user == null || user.getName() == null || user.getEmail() == null) {
-            return ResponseEntity.badRequest().body("User name and email must not be null");
+        if (user == null || user.getName() == null || user.getEmail() == null || user.getPassword() == null) {
+            return ResponseEntity.badRequest().body("User name, email, and password must not be null");
         }
         try {
             // Ensure the user is in a managed state
@@ -70,7 +70,7 @@ public class UserController {
                 mediaType = "application/json",
                 examples = @ExampleObject(
                     name = "Updated User Example",
-                    value = "{ \"name\": \"Jane Doe\", \"email\": \"jane.doe@example.com\" }"
+                    value = "{ \"name\": \"Jane Doe\", \"email\": \"jane.doe@example.com\", \"password\": \"newpassword123\" }"
                 )
             )
         )
@@ -79,6 +79,9 @@ public class UserController {
         if (existingUser != null) {
             existingUser.setName(user.getName());
             existingUser.setEmail(user.getEmail());
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                existingUser.setPassword(user.getPassword());
+            }
             return userRepository.save(existingUser);
         }
         throw new RuntimeException("User not found for update with id: " + id);
@@ -95,6 +98,21 @@ public class UserController {
             return "User with id: " + id + " deleted successfully";
         } catch (Exception e) {
             return "Error deleting user with id: " + id + " not found";
+        }
+    }
+
+    @Operation(summary = "Login", description = "Authenticate a user by email and password")
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        if (loginRequest.getEmail() == null || loginRequest.getPassword() == null) {
+            return ResponseEntity.badRequest().body("Email and password must not be null");
+        }
+
+        User user = userRepository.findByEmail(loginRequest.getEmail());
+        if (user != null && user.getPassword().equals(loginRequest.getPassword())) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(401).body("Invalid email or password");
         }
     }
 
