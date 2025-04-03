@@ -1,23 +1,39 @@
 ﻿# JavaProjects
 
 ## Overview
-This is a CRUD REST API built with Java, designed to manage user data. The application leverages modern technologies and tools to ensure scalability and maintainability.
+This is a CRUD REST API built with Java, designed to manage user and product data. The application leverages modern technologies and tools to ensure scalability, maintainability, and ease of use.
 
 ## Technologies Used
+- **Java 17**: The programming language used for the backend.
 - **Spring Boot**: For building the REST API.
+- **Spring Data JPA**: For database interaction and ORM.
 - **Hibernate**: For ORM and database interaction.
 - **PostgreSQL**: As the relational database.
+- **SpringDoc OpenAPI**: For API documentation.
+- **JUnit 5**: For unit and integration testing.
+- **Mockito**: For mocking dependencies in tests.
+- **Jackson**: For JSON serialization and deserialization.
+- **Maven**: For dependency management and building the application.
 - **Docker**: For containerizing the application.
 - **Docker Compose**: For orchestrating the application and database containers.
-- **SpringDoc OpenAPI**: For API documentation.
 
 ## Features
 The application provides the following endpoints:
-1. **Create a User**: Add a new user to the database.
+
+### User Management
+1. **Create a User**: Add a new user to the database. Requires `name`, `email`, and `password`.
 2. **Read All Users**: Retrieve a list of all users.
 3. **Read a User by ID**: Retrieve a specific user by their ID.
 4. **Update a User**: Modify an existing user's details.
 5. **Delete a User**: Remove a user by their ID.
+6. **Login**: Authenticate a user by their email and password.
+
+### Product Management
+1. **Create a Product**: Add a new product to the database. Requires `name` and `price`.
+2. **Read All Products**: Retrieve a list of all products.
+3. **Read a Product by ID**: Retrieve a specific product by its ID.
+4. **Update a Product**: Modify an existing product's details.
+5. **Delete a Product**: Remove a product by its ID.
 
 ## Setup Instructions
 ### Prerequisites
@@ -45,60 +61,71 @@ The application provides the following endpoints:
    ```
 
 4. **Access the Application**:
-   - API Base URL: `http://localhost:8080/api/users`
+   - API Base URL: `http://localhost:8080/api`
    - Swagger UI: `http://localhost:8080/swagger-ui.html`
 
 ## API Endpoints
-### User Management
-- **GET /api/users**: Retrieve all users.
-- **POST /api/users**: Create a new user.
-  - Example Request Body:
-    ```json
-    {
-      "name": "John Doe",
-      "email": "john.doe@example.com"
-    }
-    ```
-- **GET /api/users/{id}**: Retrieve a user by ID.
-- **PUT /api/users/{id}**: Update a user by ID.
-  - Example Request Body:
-    ```json
-    {
-      "name": "Jane Doe",
-      "email": "jane.doe@example.com"
-    }
-    ```
-- **DELETE /api/users/{id}**: Delete a user by ID.
+### User Endpoints
+#### Create a User
+- **POST** `/api/users`
+- **Request Body**:
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response**: Returns the created user.
+
+#### Login
+- **POST** `/api/users/login`
+- **Request Body**:
+  ```json
+  {
+    "email": "john.doe@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response**: Returns the authenticated user or an error message.
+
+### Product Endpoints
+#### Create a Product
+- **POST** `/api/products`
+- **Request Body**:
+  ```json
+  {
+    "name": "Product A",
+    "price": 50.0
+  }
+  ```
+- **Response**: Returns the created product.
+
+#### Update a Product
+- **PUT** `/api/products/{id}`
+- **Request Body**:
+  ```json
+  {
+    "name": "Updated Product",
+    "price": 100.0
+  }
+  ```
+- **Response**: Returns the updated product.
+
+### Other Endpoints
+Refer to the Swagger UI for detailed documentation of all endpoints.
 
 ## Testing
-### Unit and Integration Tests
-- Tests are written using JUnit and Mockito.
-- Test cases cover CRUD operations and exception handling.
-- Example: Verifying user not found exceptions.
-
-### Running Tests
-```bash
-mvn test
-```
+- Run tests using Maven:
+  ```bash
+  mvn test
+  ```
 
 ## Docker Details
-- **Application Container**:
-  - Image: `denkatastoynev/java-app:latest`
-  - Port: `8080`
-- **Database Container**:
-  - Image: `postgres:12`
-  - Port: `5432`
-  - Environment Variables:
-    - `POSTGRES_USER=postgres`
-    - `POSTGRES_PASSWORD=postgres`
-    - `POSTGRES_DB=postgres`
+- The application and database are containerized using Docker.
+- Use `docker compose up` to start the application and database.
 
 ## Notes
-- The application uses environment variables for database configuration.
-- Swagger documentation is automatically generated for all endpoints.
-- The database schema is automatically updated using Hibernate's `ddl-auto=update`.
-
-## Future Improvements
-- Add authentication and authorization.
-- Enhance test coverage for edge cases.
-- Implement CI/CD pipelines for automated builds and deployments.
+- Ensure the database is running before testing or using the application.
+- Passwords are stored in plain text for simplicity. Consider using encryption for production.
+- The application includes both user and product management features.

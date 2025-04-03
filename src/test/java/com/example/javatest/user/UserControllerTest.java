@@ -1,5 +1,7 @@
 package com.example.javatest.user;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -7,7 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,6 +32,12 @@ class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void testGetAllUsers() throws Exception {
@@ -162,5 +173,110 @@ class UserControllerTest {
                 .content("{}"))
                .andExpect(status().isBadRequest())
                .andExpect(content().string("Email and password must not be null"));
+    }
+
+    @Test
+    void testFindUserByEmail() {
+        // Arrange: Create a mock user
+        User user = new User();
+        user.setEmail("john@example.com");
+        user.setPassword("password123");
+
+        when(userRepository.findByEmail("john@example.com")).thenReturn(user);
+
+        // Act: Call the repository method
+        User foundUser = userRepository.findByEmail("john@example.com");
+
+        // Assert: Verify the result
+        assertNotNull(foundUser);
+        assertEquals("john@example.com", foundUser.getEmail());
+    }
+
+    @Test
+    void testSaveUser() {
+        // Arrange: Create a new user
+        User user = new User();
+        user.setName("Jane Doe");
+        user.setEmail("jane@example.com");
+        user.setPassword("securepassword");
+
+        when(userRepository.save(user)).thenReturn(user);
+
+        // Act: Save the user
+        User savedUser = userRepository.save(user);
+
+        // Assert: Verify the saved user
+        assertNotNull(savedUser);
+        assertEquals("Jane Doe", savedUser.getName());
+        assertEquals("jane@example.com", savedUser.getEmail());
+    }
+
+    @Test
+    void testDeleteUserById() {
+        // Arrange: Mock the repository behavior
+        doNothing().when(userRepository).deleteById(1L);
+
+        // Act: Delete the user
+        userRepository.deleteById(1L);
+
+        // Assert: Verify the interaction
+        verify(userRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void testCreateUserWithMissingFields() throws Exception {
+        // Arrange: Create a user with missing fields
+        User user = new User();
+        user.setName("John Doe");
+
+        // Act & Assert: Perform POST request and verify bad request response
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+               .andExpect(status().isBadRequest())
+               .andExpect(content().string("User name, email, and password must not be null"));
+    }
+
+    @Test
+    void testCreateUserWithInvalidEmail() throws Exception {
+        // Arrange: Create a user with an invalid email
+        User user = new User();
+        user.setName("John Doe");
+        user.setEmail("invalid-email");
+        user.setPassword("password123");
+
+        // Act & Assert: Perform POST request and verify bad request response
+        mockMvc.perform(post("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user)))
+               .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateNonExistentUser() throws Exception {
+        // Arrange: Configure repository to return empty for non-existent user
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        User updatedUser = new User();
+        updatedUser.setName("Updated Name");
+        updatedUser.setEmail("updated@example.com");
+
+        // Act & Assert: Perform PUT request and verify error response
+        mockMvc.perform(put("/api/users/999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedUser)))
+               .andExpect(status().isInternalServerError())
+               .andExpect(content().string("User not found for update with id: 999"));
+    }
+
+    @Test
+    void testDeleteNonExistentUser() throws Exception {
+        // Arrange: Configure repository to return empty for non-existent user
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // Act & Assert: Perform DELETE request and verify error response
+        mockMvc.perform(delete("/api/users/999"))
+               .andExpect(status().isOk())
+               .andExpect(content().string("Error deleting user with id: 999 not found"));
     }
 }
