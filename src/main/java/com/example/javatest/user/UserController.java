@@ -81,7 +81,7 @@ public class UserController {
             existingUser.setEmail(user.getEmail());
             return userRepository.save(existingUser);
         }
-        return null;
+        throw new RuntimeException("User not found for update with id: " + id);
     }
 
     @Operation(summary = "Delete a user", description = "Delete a user by their ID")
