@@ -56,6 +56,8 @@ The application provides the following endpoints:
 
 3. **Build and Run with Docker Compose**:
    ```bash
+   docker compose up --build
+   or
    docker compose build
    docker compose up java_app
    ```
