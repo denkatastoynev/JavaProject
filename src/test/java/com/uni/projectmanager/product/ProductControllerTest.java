@@ -1,4 +1,4 @@
-package com.example.javatest.product;
+package com.uni.projectmanager.product;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -15,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uni.projectmanager.product.Product;
+import com.uni.projectmanager.product.ProductController;
+import com.uni.projectmanager.product.ProductRepository;
 
 @WebMvcTest(ProductController.class)
 class ProductControllerTest {

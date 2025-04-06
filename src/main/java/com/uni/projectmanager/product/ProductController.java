@@ -1,4 +1,4 @@
-package com.example.javatest.product;
+package com.uni.projectmanager.product;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

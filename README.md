@@ -65,6 +65,7 @@ The application provides the following endpoints:
 4. **Access the Application**:
    - API Base URL: `http://localhost:8080/api`
    - Swagger UI: `http://localhost:8080/swagger-ui.html`
+   - Front-end: `http://localhost:3000/`
 
 ## API Endpoints
 ### User Endpoints

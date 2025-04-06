@@ -1,4 +1,4 @@
-package com.example.javatest.product;
+package com.uni.projectmanager.product;
 
 import jakarta.persistence.*;
 
