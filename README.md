@@ -1,4 +1,4 @@
-﻿# JavaProjects
+﻿# JavaProject
 
 ## Overview
 This is a CRUD REST API built with Java, designed to manage user and product data. The application leverages modern technologies and tools to ensure scalability, maintainability, and ease of use.
