@@ -16,6 +16,8 @@ This is a CRUD REST API built with Java, designed to manage user and product dat
 - **Maven**: For dependency management and building the application.
 - **Docker**: For containerizing the application.
 - **Docker Compose**: For orchestrating the application and database containers.
+- **JWT (JSON Web Tokens)**: For secure user authentication and authorization.
+- **React**: For building the front-end user interface.
 
 ## Features
 The application provides the following endpoints:
@@ -35,11 +37,39 @@ The application provides the following endpoints:
 4. **Update a Product**: Modify an existing product's details.
 5. **Delete a Product**: Remove a product by its ID.
 
+## JWT Authentication
+The application uses **JSON Web Tokens (JWT)** for secure authentication and authorization. Upon successful login, a JWT is generated and returned to the client. This token is used to authenticate subsequent API requests.
+
+- **Token Generation**: Tokens are generated using the `JwtUtil` class.
+- **Token Validation**: Tokens are validated to ensure they are not expired or tampered with.
+- **Environment Variables**:
+  - `JWT_SECRET_KEY`: Secret key used for signing the tokens.
+  - `JWT_EXPIRATION_TIME`: Token expiration time in milliseconds.
+
+## React Front-End
+The front-end of the application is built using **React**. It provides a user-friendly interface for interacting with the API.
+
+### Features:
+1. **Login Page**:
+   - Allows users to log in using their email and password.
+   - Displays appropriate error messages for invalid credentials or server errors.
+2. **User Page**:
+   - Displays user details after successful login.
+   - Provides a logout button to return to the login page.
+
+### Development:
+- **React Router**: Used for navigation between pages.
+- **Styling**: Inline CSS is used for styling components.
+- **Dependencies**:
+  - `react`, `react-dom`, `react-router-dom`: Core React libraries.
+  - `@babel/preset-react`: For transpiling JSX.
+
 ## Setup Instructions
 ### Prerequisites
 - Docker and Docker Compose installed.
 - Java 17 or higher installed (for local development).
 - Maven installed (for building the application).
+- Node.js and npm installed (for front-end development).
 
 ### Steps
 1. **Clone the Repository**:
@@ -62,7 +92,14 @@ The application provides the following endpoints:
    docker compose up java_app
    ```
 
-4. **Access the Application**:
+4. **Run the React Front-End**:
+   ```bash
+   npm install
+   npm start
+   ```
+   This will start the React development server on `http://localhost:3000`.
+
+5. **Access the Application**:
    - API Base URL: `http://localhost:8080/api`
    - Swagger UI: `http://localhost:8080/swagger-ui.html`
    - Front-end: `http://localhost:3000/`
